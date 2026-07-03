@@ -29,9 +29,9 @@ res.cookie("token",token,{
     maxAge:7*24*60*60*1000,
     sameSite:"none",
     secure:true
-   })
-
-   return res.status(201).json(user)
+})
+console.log("Signup Set-Cookie:", res.getHeader("Set-Cookie"))
+return res.status(201).json(user)
 
 
    } catch (error) {
@@ -59,6 +59,7 @@ export const login=async (req,res)=>{
      sameSite:"none",
      secure:true
     })
+    console.log("Login Set-Cookie:", res.getHeader("Set-Cookie"))
  
     return res.status(200).json(user)
  
