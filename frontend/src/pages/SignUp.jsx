@@ -17,6 +17,22 @@ let dispatch=useDispatch()
 
     const handleSignUp=async (e)=>{
         e.preventDefault()
+        setErr("")
+        
+        // Client-side validation
+        if(!userName.trim()){
+            setErr("Username is required")
+            return
+        }
+        if(!email.trim()){
+            setErr("Email is required")
+            return
+        }
+        if(password.length < 6){
+            setErr("Password must be at least 6 characters")
+            return
+        }
+        
         setLoading(true)
         try {
             let result =await axios.post(`${serverUrl}/api/auth/signup`,{
@@ -34,24 +50,44 @@ userName,email,password
             setErr(error?.response?.data?.message)
         }
     }
+    
+    const handlePasswordChange=(e)=>{
+        setPassword(e.target.value)
+        setErr("")
+    }
+    
+    const handleEmailChange=(e)=>{
+        setEmail(e.target.value)
+        setErr("")
+    }
+    
+    const handleUserNameChange=(e)=>{
+        setUserName(e.target.value)
+        setErr("")
+    }
 
   return (
-    <div className='w-full h-[100vh] bg-slate-200 flex items-center justify-center'>
-     <div className='w-full max-w-[500px] h-[600px] bg-white rounded-lg shadow-gray-400 shadow-lg flex flex-col gap-[30px]'>
-        <div className='w-full h-[200px] bg-[#20c7ff] rounded-b-[30%] shadow-gray-400 shadow-lg flex items-center justify-center'>
-           <h1 className='text-gray-600 font-bold text-[30px]'>welcome to <span  className='text-white'>chatly</span></h1>
+    <div className='w-full h-[100vh] bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex items-center justify-center'>
+     <div className='w-full max-w-[500px] h-auto bg-gray-800 rounded-3xl shadow-2xl flex flex-col gap-[30px] p-[40px] border border-gray-700'>
+        <div className='flex flex-col gap-[10px]'>
+           <h1 className='text-white font-bold text-[35px]'>Sign up</h1>
+           <p className='text-gray-400 text-[14px]'>Create your account and start chatting with friends instantly on Chatly.</p>
         </div>
         <form className='w-full flex flex-col gap-[20px] items-center' onSubmit={handleSignUp}>
-
-        <input type="text" placeholder='username' className='w-[90%] h-[50px] outline-none border-2 border-[#20c7ff] px-[20px] py-[10px] bg-[white] rounded-lg shadow-gray-200 shadow-lg text-gray-700 text-[19px]' onChange={(e)=>setUserName(e.target.value)} value={userName}/>
-        <input type="email" placeholder='email' className='w-[90%] h-[50px] outline-none border-2 border-[#20c7ff] px-[20px] py-[10px] bg-[white] rounded-lg shadow-gray-200 shadow-lg text-gray-700 text-[19px]'  onChange={(e)=>setEmail(e.target.value)} value={email}/>
-        <div className='w-[90%] h-[50px] border-2 border-[#20c7ff] overflow-hidden rounded-lg shadow-gray-200 shadow-lg relative'>
-        <input type={`${show?"text":"password"}`} placeholder='password' className='w-full h-full outline-none  px-[20px] py-[10px] bg-[white]  text-gray-700 text-[19px]'  onChange={(e)=>setPassword(e.target.value)} value={password}/>
-        <span className='absolute top-[10px] right-[20px] text-[19px] text-[#20c7ff] font-semibold cursor-pointer' onClick={()=>setShow(prev=>!prev)}>{`${show?"hidden":"show"}`}</span>
+        <div className='w-full h-[50px] border border-gray-600 overflow-hidden rounded-xl bg-gray-700 relative hover:bg-gray-600 transition'>
+        <input type="text" placeholder='Enter your username' className='w-full h-full outline-none px-[20px] py-[10px] bg-transparent text-gray-200 text-[15px] placeholder-gray-500' onChange={handleUserNameChange} value={userName}/>
         </div>
-        {err && <p className='text-red-500'>{"*" + err}</p>}
-        <button className='px-[20px] py-[10px] bg-[#20c7ff] rounded-2xl shadow-gray-400 shadow-lg text-[20px] w-[200px] mt-[20px] font-semibold hover:shadow-inner' disabled={loading}>{loading?"Loading...":"Sign Up"}</button>
-        <p className='cursor-pointer' onClick={()=>navigate("/login")}>Already Have An Account ? <span className='text-[#20c7ff] text-[bold]' >Login</span></p>
+        <div className='w-full h-[50px] border border-gray-600 overflow-hidden rounded-xl bg-gray-700 relative hover:bg-gray-600 transition'>
+        <input type="email" placeholder='Enter your email address' className='w-full h-full outline-none px-[20px] py-[10px] bg-transparent text-gray-200 text-[15px] placeholder-gray-500'  onChange={handleEmailChange} value={email}/>
+        </div>
+        <div className='w-full h-[50px] border border-gray-600 overflow-hidden rounded-xl bg-gray-700 relative hover:bg-gray-600 transition'>
+        <input type={`${show?"text":"password"}`} placeholder='Enter your password (min 6 characters)' className='w-full h-full outline-none px-[20px] py-[10px] bg-transparent text-gray-200 text-[15px] placeholder-gray-500'  onChange={handlePasswordChange} value={password}/>
+        <span className='absolute top-[15px] right-[20px] text-[14px] text-blue-400 font-semibold cursor-pointer hover:text-blue-300' onClick={()=>setShow(prev=>!prev)}>{`${show?"hidden":"show"}`}</span>
+        </div>
+        {password && password.length < 6 && <p className='text-yellow-400 text-[12px]'>Password must be at least 6 characters ({password.length}/6)</p>}
+        {err && <p className='text-red-400 text-[14px]'>{"* " + err}</p>}
+        <button className='w-full h-[50px] bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl text-white text-[16px] font-semibold mt-[10px] hover:from-blue-700 hover:to-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed' disabled={loading}>{loading?"Loading...":"Sign up"}</button>
+        <p className='text-gray-400 text-[14px] text-center'>Already have an account? <span className='text-blue-400 font-semibold cursor-pointer hover:text-blue-300' onClick={()=>navigate("/login")}>Log in</span></p>
      </form>
      </div>
      

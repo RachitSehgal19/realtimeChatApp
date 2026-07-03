@@ -13,7 +13,7 @@ import axios from 'axios';
 import { serverUrl } from '../main';
 import { setMessages } from '../redux/messageSlice';
 function MessageArea() {
-  let {selectedUser,userData,socket}=useSelector(state=>state.user)
+  let {selectedUser,userData,socket,onlineUsers}=useSelector(state=>state.user)
   let dispatch=useDispatch()
   let [showPicker,setShowPicker]=useState(false)
 let [input,setInput]=useState("")
@@ -58,21 +58,24 @@ return ()=>socket?.off("newMessage")
 },[messages,setMessages])
  
   return (
-    <div className={`lg:w-[70%] relative   ${selectedUser?"flex":"hidden"} lg:flex  w-full h-full bg-slate-200 border-l-2 border-gray-300 overflow-hidden`}>
+    <div className={`lg:w-[70%] relative ${selectedUser?"flex":"hidden"} lg:flex w-full h-full bg-black border-l border-gray-700 overflow-hidden flex-col`}>
       
 {selectedUser && 
-<div className='w-full h-[100vh] flex flex-col overflow-hidden gap-[20px] items-center'>
-<div className='w-full h-[100px] bg-[#1797c2] rounded-b-[30px] shadow-gray-400 shadow-lg gap-[20px] flex items-center px-[20px] '>
-           <div className='cursor-pointer' onClick={()=>dispatch(setSelectedUser(null))}>
-                  <IoIosArrowRoundBack className='w-[40px] h-[40px] text-white'/>
+<div className='w-full h-[100vh] flex flex-col overflow-hidden items-center'>
+<div className='w-full h-[80px] bg-gradient-to-r from-gray-950 to-black shadow-lg gap-[15px] flex items-center px-[20px] border-b border-gray-700'>
+           <div className='cursor-pointer hover:bg-gray-700 p-2 rounded-lg transition' onClick={()=>dispatch(setSelectedUser(null))}>
+                  <IoIosArrowRoundBack className='w-[28px] h-[28px] text-gray-300 hover:text-white'/>
            </div>
-         <div className='w-[50px] h-[50px] rounded-full overflow-hidden flex justify-center items-center bg-white cursor-pointer shadow-gray-500 shadow-lg' >
-        <img src={ selectedUser?.image || dp} alt="" className='h-[100%]'/>
+         <div className='w-[45px] h-[45px] rounded-full overflow-hidden flex justify-center items-center bg-gradient-to-br from-blue-500 to-purple-500 cursor-pointer shadow-lg'>
+        <img src={selectedUser?.image || dp} alt="" className='h-[100%]'/>
         </div>
-        <h1 className='text-white font-semibold text-[20px]'>{selectedUser?.name || "user"}</h1>
+        <div className='flex-1'>
+        <h1 className='text-cyan-400 font-semibold text-[16px] drop-shadow-[0_0_10px_rgba(34,211,238,0.6)]'>{selectedUser?.name || "user"}</h1>
+        <p className={`text-[12px] ${onlineUsers?.includes(selectedUser?._id) ? 'text-lime-400' : 'text-gray-600'}`}>{onlineUsers?.includes(selectedUser?._id) ? 'online' : 'offline'}</p>
+        </div>
     </div>
 
-    <div className='w-full h-[70%] flex flex-col py-[30px]  px-[20px] overflow-auto gap-[20px] '>
+    <div className='w-full h-[calc(100vh-140px)] flex flex-col py-[20px] px-[20px] overflow-auto gap-[15px] bg-black chat-pattern-bg'>
 
 {showPicker && <div className='absolute bottom-[120px] left-[20px]'><EmojiPicker width={250} height={350} className='shadow-lg z-[100]' onEmojiClick={onEmojiClick}/></div> }
 
@@ -94,28 +97,28 @@ return ()=>socket?.off("newMessage")
     </div>
     </div> 
     }
-{selectedUser && <div className='w-full lg:w-[70%] h-[100px] fixed bottom-[20px] flex items-center justify-center '>
-      <img src={frontendImage} alt="" className='w-[80px] absolute bottom-[100px] right-[20%] rounded-lg shadow-gray-400 shadow-lg'/>
-     <form className='w-[95%] lg:w-[70%] h-[60px] bg-[rgb(23,151,194)] shadow-gray-400 shadow-lg rounded-full flex items-center gap-[20px] px-[20px] relative' onSubmit={handleSendMessage}>
+{selectedUser && <div className='w-full lg:w-[70%] h-[80px] fixed bottom-[0px] flex items-center justify-center bg-gradient-to-t from-black to-transparent'>
+      <img src={frontendImage} alt="" className='w-[70px] absolute bottom-[85px] right-[20px] rounded-lg shadow-lg'/>
+     <form className='w-[95%] lg:w-[70%] h-[60px] bg-gray-900 shadow-lg rounded-3xl flex items-center gap-[15px] px-[20px] relative border border-gray-700 hover:bg-gray-800 transition' onSubmit={handleSendMessage}>
       
-       <div onClick={()=>setShowPicker(prev=>!prev)}>
-       <RiEmojiStickerLine  className='w-[25px] h-[25px] text-white cursor-pointer'/>
+       <div onClick={()=>setShowPicker(prev=>!prev)} className='hover:bg-gray-700 p-2 rounded-lg cursor-pointer transition'>
+       <RiEmojiStickerLine  className='w-[22px] h-[22px] text-gray-400 hover:text-gray-300'/>
        </div>
        <input type="file" accept="image/*" ref={image} hidden onChange={handleImage}/>
-       <input type="text" className='w-full h-full px-[10px] outline-none border-0 text-[19px] text-white bg-transparent placeholder-white' placeholder='Message' onChange={(e)=>setInput(e.target.value)} value={input}/>
-<div onClick={()=>image.current.click()}>
-<FaImages className='w-[25px] h-[25px] cursor-pointer text-white'/>
+       <input type="text" className='w-full h-full px-[10px] outline-none border-0 text-[16px] text-cyan-400 bg-transparent placeholder-lime-400' placeholder='Message' onChange={(e)=>setInput(e.target.value)} value={input}/>
+<div onClick={()=>image.current.click()} className='hover:bg-gray-700 p-2 rounded-lg cursor-pointer transition'>
+<FaImages className='w-[22px] h-[22px] cursor-pointer text-gray-400 hover:text-gray-300'/>
 </div>
-{(input.length>0  ||  backendImage!=null) && (<button>
-<RiSendPlane2Fill className='w-[25px] cursor-pointer h-[25px] text-white'/>
+{(input.length>0  ||  backendImage!=null) && (<button className='hover:bg-gray-700 p-2 rounded-lg transition'>
+<RiSendPlane2Fill className='w-[22px] cursor-pointer h-[22px] text-blue-500 hover:text-blue-400'/>
 </button>)}
 
      </form>
      </div>}
     {!selectedUser && 
-    <div className='w-full h-full flex flex-col justify-center items-center'>
-    <h1 className='text-gray-700 font-bold text-[50px]'>Welcome to Chatly</h1>
-    <span className='text-gray-700 font-semibold text-[30px]'>Chat Friendly !</span>
+    <div className='w-full h-full flex flex-col justify-center items-center bg-black chat-pattern-bg'>
+    <h1 className='text-cyan-400 font-bold text-[48px] drop-shadow-[0_0_20px_rgba(34,211,238,0.7)]'>Welcome to Chatly</h1>
+    <span className='text-lime-400 font-semibold text-[24px]'>Select a chat to start messaging</span>
       </div>}
     
 

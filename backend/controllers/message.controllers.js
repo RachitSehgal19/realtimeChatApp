@@ -1,6 +1,7 @@
 import uploadOnCloudinary from "../config/cloudinary.js";
 import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
+import User from "../models/user.model.js";
 import { getReceiverSocketId, io } from "../socket/socket.js";
 
 export const sendMessage=async (req,res)=>{
@@ -35,6 +36,14 @@ export const sendMessage=async (req,res)=>{
         const receiverSocketId=getReceiverSocketId(receiver)
 if(receiverSocketId){
     io.to(receiverSocketId).emit("newMessage",newMessage)
+    
+    // Fetch sender info for notification
+    const senderInfo = await User.findById(sender)
+    io.to(receiverSocketId).emit("messageNotification",{
+        senderName: senderInfo?.name || "Someone",
+        senderId: sender,
+        message: message || "Sent an image"
+    })
 }
 
 
