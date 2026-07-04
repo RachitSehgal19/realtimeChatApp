@@ -16,6 +16,7 @@ try {
 
 export const editProfile=async (req,res)=>{
     try {
+        console.log("===== EDIT PROFILE STARTED =====");
         let {name}=req.body
         let image;
         if(req.file){
